@@ -9,7 +9,7 @@ from blacktide.items import BlacktideItem
 class TminazumaSpider(CrawlSpider):
     name = 'tminazuma'
     allowed_domains = ['keiba.yahoo.co.jp']
-    start_urls = ['http://www.keiba.yahoo.co.jp/']
+    start_urls = ['http://keiba.yahoo.co.jp/']
 
     rules = (
         Rule(LinkExtractor(allow=r'Items/'), callback='parse_item', follow=True),
