@@ -20,6 +20,7 @@ NEWSPIDER_MODULE = 'blacktide.spiders'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
+REDIRECT_ENABLED = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
