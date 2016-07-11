@@ -1,17 +1,27 @@
 # -*- coding: utf-8 -*-
-import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
-from blacktide.items import BlacktideItem
+from blacktide.parsers import RaceResultParser, HorseParser
 
 
 class TminazumaSpider(CrawlSpider):
     name = 'tminazuma'
     allowed_domains = ['keiba.yahoo.co.jp']
+    _race_result_parser = RaceResultParser()
+    _horse_parser = HorseParser()
 
     rules = (
-        Rule(LinkExtractor(allow=r'Items/'), callback='parse_item', follow=True),
+        Rule(LinkExtractor(allow=r'/race/list/'),
+             follow=True, callback='parse_list'),
+        Rule(LinkExtractor(allow=r'/race/result/'),
+             follow=True, callback='parse_result'),
+        Rule(LinkExtractor(allow=r'/directory/horse/\d+?/\Z'),
+             follow=False, callback='parse_horse'),
+        Rule(LinkExtractor(allow=r'/directory/jocky/\d+?/\Z'),
+             follow=False, callback='parse_jockey'),
+        Rule(LinkExtractor(allow=r'/directory/trainer/\d+?/\Z'),
+             follow=False, callback='parse_trainer'),
     )
 
     def __init__(self, year, month, *args, **kargs):
@@ -21,9 +31,8 @@ class TminazumaSpider(CrawlSpider):
             .format(year, month)
             ]
 
-    def parse_item(self, response):
-        i = BlacktideItem()
-        #i['domain_id'] = response.xpath('//input[@id="sid"]/@value').extract()
-        #i['name'] = response.xpath('//div[@id="name"]').extract()
-        #i['description'] = response.xpath('//div[@id="description"]').extract()
-        return i
+    def parse_result(self, response):
+        return self._race_result_parser.parse(response)
+
+    def parse_horse(self, response):
+        return self._horse_parser.parse(response)
