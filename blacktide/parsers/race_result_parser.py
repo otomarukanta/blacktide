@@ -135,14 +135,14 @@ class RaceResultParser():
             line['race_id'] = self.race_id
             line['odds_id'] = i
             line['kind'] = kinds[i]
-            combs, line['yen'] = [self.number_regex.findall(x)[0]
-                                  for x
-                                  in tr.xpath('td/text()').extract()]
+            combs, yen = [self.number_regex.findall(x)
+                          for x in tr.xpath('td/text()').extract()]
             line['comb1'] = combs[0] if len(combs) > 0 else None
             line['comb2'] = combs[1] if len(combs) > 1 else None
             line['comb3'] = combs[2] if len(combs) > 2 else None
+            line['yen'] = yen[0]
             line['popularity'] = self.number_regex.findall(
-                    tr.xpath('td/span/text()').extract())[0]
+                    tr.xpath('td/span/text()').extract()[0])[0]
             ret.append(line)
 
         return ret
