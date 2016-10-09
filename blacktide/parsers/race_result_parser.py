@@ -16,7 +16,7 @@ class RaceResultParser():
 
     def parse(self, res):
         item = RaceResultItem()
-        item['race_id'] = self.id_regex.match(res.url).group(1)
+        self.race_id = self.id_regex.match(res.url).group(1)
         item['meta'] = self.__parse_meta(res)
         item['result'] = self.__parse_result(res)
         item['payoff'] = self.__parse_payoff(res)
@@ -25,6 +25,7 @@ class RaceResultParser():
 
     def __parse_meta(self, res):
         ret = dict()
+        ret['race_id'] = self.race_id
         ret['race_name'] = res.xpath('//h1[@class="fntB"]/text()')\
                               .extract_first().strip()
         ret['race_no'] = res.xpath('//td[@id="raceNo"]/text()')\
@@ -74,6 +75,7 @@ class RaceResultParser():
 
         for i, x in enumerate(tr_list):
             line = dict()
+            line['race_id'] = self.race_id
             line['row'] = i
             line['fp'] = self.__get_text(x[0])
             line['bk'] = x[1].xpath('span/text()')[0].extract().strip()
@@ -121,15 +123,27 @@ class RaceResultParser():
     def __parse_payoff(self, res):
         keys = res.xpath('//div[@class="clearFix"]//th/text()').extract()
         rowspan = res.xpath('//div[@class="clearFix"]//th/@rowspan').extract()
-        headers = list()
+        kinds = list()
         for k, v in zip(keys, rowspan):
             for i in range(int(v)):
-                headers.append(k)
+                kinds.append(k)
 
-        values = iter(res.xpath(
-            '//div[@class="clearFix"]//td/text()').extract())
+        ret = list()
 
-        ret = [(k, v) for k, v in zip(headers, zip(values, values))]
+        for i, tr in enumerate(res.xpath('//div[@class="clearFix"]//tr')):
+            line = dict()
+            line['race_id'] = self.race_id
+            line['odds_id'] = i
+            line['kind'] = kinds[i]
+            combs, line['yen'] = [self.number_regex.findall(x)[0]
+                                  for x
+                                  in tr.xpath('td/text()').extract()]
+            line['comb1'] = combs[0] if len(combs) > 0 else None
+            line['comb2'] = combs[1] if len(combs) > 1 else None
+            line['comb3'] = combs[2] if len(combs) > 2 else None
+            line['popularity'] = self.number_regex.findall(
+                    tr.xpath('td/span/text()').extract())[0]
+            ret.append(line)
 
         return ret
 

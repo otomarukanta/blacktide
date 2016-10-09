@@ -9,7 +9,6 @@ import scrapy
 
 
 class RaceResultItem(scrapy.Item):
-    race_id = scrapy.Field()
     meta = scrapy.Field()
     result = scrapy.Field()
     payoff = scrapy.Field()
