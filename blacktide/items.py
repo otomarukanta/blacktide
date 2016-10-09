@@ -10,18 +10,9 @@ import scrapy
 
 class RaceResultItem(scrapy.Item):
     race_id = scrapy.Field()
-    race_no = scrapy.Field()
-    info = scrapy.Field()
-    payoff = scrapy.Field()
+    meta = scrapy.Field()
     result = scrapy.Field()
-    schedule = scrapy.Field()
-    race_name = scrapy.Field()
-    weather = scrapy.Field()
-    distance = scrapy.Field()
-    qualification = scrapy.Field()
-    condition = scrapy.Field()
-    prize = scrapy.Field()
-    ground_condition = scrapy.Field()
+    payoff = scrapy.Field()
 
 
 class HorseItem(scrapy.Item):
