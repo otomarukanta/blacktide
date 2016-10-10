@@ -91,3 +91,13 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+SQLALCHEMY_DB_CONF = {
+        "drivername": "postgres",
+        "host": "localhost",
+        "port": "5432",
+        "username": "postgres",
+        "password": "admin",
+        "database": "kurofune"
+        }
+

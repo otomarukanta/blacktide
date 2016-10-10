@@ -28,8 +28,8 @@ class RaceResultParser():
         ret['race_id'] = self.race_id
         ret['race_name'] = res.xpath('//h1[@class="fntB"]/text()')\
                               .extract_first().strip()
-        ret['race_no'] = res.xpath('//td[@id="raceNo"]/text()')\
-                            .extract_first()
+        ret['race_no'] = self.number_regex.findall(
+                res.xpath('//td[@id="raceNo"]/text()').extract_first())[0]
 
         date, place, time = res.xpath('//p[@id="raceTitDay"]/text()').extract()
         year, month, day = self.number_regex.findall(date)
@@ -91,10 +91,13 @@ class RaceResultParser():
                 line['time'] = None
             line['margin'] = self.__get_text(x[7])
             try:
-                line['position'] = [int(x)
-                                    for x in self.__get_text(x[8]).split('-')]
+                pos = [int(x) for x in self.__get_text(x[8]).split('-')]
             except:
-                line['position'] = None
+                pos = list()
+            line['first_position'] = pos[-4] if len(pos) > 3 else None
+            line['second_position'] = pos[-3] if len(pos) > 2 else None
+            line['third_position'] = pos[-2] if len(pos) > 1 else None
+            line['fourth_position'] = pos[-1] if len(pos) > 0 else None
             line['l3f'] = self.__parse_time(self.__get_text(x[9]))
             line['jockey_weight'] = float('.'.join(
                 self.number_regex.findall(self.__get_text(x[10]))))
@@ -135,14 +138,25 @@ class RaceResultParser():
             line['race_id'] = self.race_id
             line['odds_id'] = i
             line['kind'] = kinds[i]
-            combs, yen = [self.number_regex.findall(x)
-                          for x in tr.xpath('td/text()').extract()]
+            combs, yen, _ = [x.xpath('text()').extract_first()
+                          for x in tr.xpath('td')]
+            if combs:
+                combs = self.number_regex.findall(combs)
+            else:
+                combs = list()
             line['comb1'] = combs[0] if len(combs) > 0 else None
             line['comb2'] = combs[1] if len(combs) > 1 else None
             line['comb3'] = combs[2] if len(combs) > 2 else None
-            line['yen'] = yen[0]
-            line['popularity'] = self.number_regex.findall(
-                    tr.xpath('td/span/text()').extract()[0])[0]
+
+            yen = self.number_regex.findall(yen)
+            line['yen'] = yen[0] if yen else None
+
+            popularity = self.number_regex.findall(
+                    tr.xpath('td/span/text()').extract_first())
+            if combs:
+                line['popularity'] = popularity[0]
+            else:
+                line['popularity'] = None
             ret.append(line)
 
         return ret
