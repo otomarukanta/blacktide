@@ -22,4 +22,7 @@ class TminazumaSpider(CrawlSpider):
         self.start_urls = ['http://keiba.yahoo.co.jp/schedule/list/']
 
     def parse_result(self, response):
-        return self._race_result_parser.parse(response)
+        self.logger.debug("parseing ...")
+        parsed = self._race_result_parser.parse(response)
+        self.logger.debug("done")
+        return parsed
