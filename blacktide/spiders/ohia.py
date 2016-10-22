@@ -13,14 +13,14 @@ class OhiaSpider(CrawlSpider):
         Rule(LinkExtractor(allow=r'/directory/jockeysearch/')),
         Rule(LinkExtractor(allow=r'/directory/jockey/'),
              follow=False,
-             callback='parse'),
+             callback='parse_jockey'),
     )
 
     def __init__(self, *args, **kargs):
         super(OhiaSpider, self).__init__(*args, **kargs)
         self.start_urls = ['http://keiba.yahoo.co.jp/directory/jockeysearch/']
 
-    def parse(self, response):
+    def parse_jockey(self, response):
         self.logger.debug("parseing ...")
         parsed = parser.parse(response)
         self.logger.debug("done")
