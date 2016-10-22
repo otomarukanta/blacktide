@@ -17,6 +17,11 @@ class RaceResultItem(scrapy.Item):
         return repr({"meta": self['meta']})
 
 
+class JockeyItem(scrapy.Item):
+    jockey_id = scrapy.Field()
+    name = scrapy.Field()
+    kana = scrapy.Field()
+
 
 class HorseItem(scrapy.Item):
     horse_id = scrapy.Field()
