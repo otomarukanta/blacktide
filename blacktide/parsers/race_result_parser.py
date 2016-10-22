@@ -8,7 +8,7 @@ class RaceResultParser():
     id_regex = re.compile(r'.*?race\/result\/(\d+)')
     date_regex = re.compile(r'(\d+)年(\d+)月(\d+)日')
     number_regex = re.compile(r'\d+')
-    grade_regex = re.compile(r"\d+?万下|オープン|新馬|未勝利")
+    grade_regex = re.compile(r"\d+?万下|オープン|新馬|未勝利|未出走")
 
     surface_set = set(['芝', 'ダート', '芝→ダート'])
     rotation_set = set(['右', '左', '直線'])
@@ -45,7 +45,7 @@ class RaceResultParser():
             res.xpath('//p[@id="raceTitMeta"]/img/@alt').extract()
         ret['track_meter'] = self.number_regex.findall(metas[0])[0]
         ret['track_place'] = res.xpath('//li[@id="racePlaceNaviC"]/a/text()')\
-                                .extract()
+                                .extract_first()
         track_set = set(metas[0].split(' ')[0].split('・'))
         ret['track_surface'] = self.__get_matched(self.surface_set, track_set)
         ret['track_side'] = self.__get_matched(self.side_set, track_set)
@@ -153,7 +153,7 @@ class RaceResultParser():
 
             popularity = self.number_regex.findall(
                     tr.xpath('td/span/text()').extract_first())
-            if combs:
+            if popularity:
                 line['popularity'] = popularity[0]
             else:
                 line['popularity'] = None
@@ -203,7 +203,9 @@ class RaceResultParser():
         return condition
 
     def __parse_time(self, raw):
-        if raw.count('.') == 1:
+        if raw == "0." or raw == "99.9":
+            t = None
+        elif raw.count('.') == 1:
             t = datetime.strptime(raw, '%S.%f').time()
         elif raw.count('.') == 2:
             t = datetime.strptime(raw, '%M.%S.%f').time()

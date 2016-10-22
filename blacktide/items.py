@@ -13,6 +13,10 @@ class RaceResultItem(scrapy.Item):
     result = scrapy.Field()
     payoff = scrapy.Field()
 
+    def __repr__(self):
+        return repr({"meta": self['meta']})
+
+
 
 class HorseItem(scrapy.Item):
     horse_id = scrapy.Field()
