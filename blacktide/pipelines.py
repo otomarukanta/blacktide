@@ -8,8 +8,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine.url import URL
 from sqlalchemy.dialects.postgresql import insert
-from .models import RaceMeta, RacePayoff, RaceResult, Jockey, create_all_tables
-from blacktide.items import RaceResultItem, JockeyItem
+from .models import RaceMeta, RacePayoff, RaceResult, Jockey, Horse, create_all_tables
+from blacktide.items import RaceResultItem, JockeyItem, HorseItem
 
 
 class TminazumaPipeline(object):
@@ -53,6 +53,15 @@ class TminazumaPipeline(object):
         )
         self.conn.execute(stmt)
 
+    def insert_horse(self, item):
+        stmt = insert(Horse).values(
+            **item
+        ).on_conflict_do_update(
+            constraint='horses_pkey',
+            set_=dict(item)
+        )
+        self.conn.execute(stmt)
+
     def process_item(self, item, spider):
         trans = self.conn.begin()
         spider.logger.debug('start to insert db')
@@ -61,6 +70,8 @@ class TminazumaPipeline(object):
                 self.insert_race_result(item)
             elif isinstance(item, JockeyItem):
                 self.insert_jockey(item)
+            elif isinstance(item, HorseItem):
+                self.insert_horse(item)
             trans.commit()
         except:
             trans.rollback()

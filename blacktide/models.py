@@ -1,6 +1,6 @@
 from sqlalchemy import Column
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.types import String, DateTime, Integer, SmallInteger
+from sqlalchemy.types import String, DateTime, Integer, SmallInteger, Date
 
 DeclarativeBase = declarative_base()
 
@@ -88,3 +88,31 @@ class Jockey(DeclarativeBase):
     jockey_id = Column(String, primary_key=True)
     name = Column(String)
     kana = Column(String)
+
+
+class Horse(DeclarativeBase):
+    __tablename__ = "horses"
+
+    horse_id = Column(String, primary_key=True)
+    sex = Column(String)
+    horse_name = Column(String)
+    birthday = Column(Date)
+    color = Column(String)
+    trainer_id = Column(String)
+    owner = Column(String)
+    producer = Column(String)
+    birthplace = Column(String)
+    sire = Column(String)
+    sire_sire = Column(String)
+    sire_sire_sire = Column(String)
+    sire_sire_mare = Column(String)
+    sire_mare = Column(String)
+    sire_mare_sire = Column(String)
+    sire_mare_mare = Column(String)
+    mare = Column(String)
+    mare_sire = Column(String)
+    mare_sire_sire = Column(String)
+    mare_sire_mare = Column(String)
+    mare_mare = Column(String)
+    mare_mare_sire = Column(String)
+    mare_mare_mare = Column(String)
