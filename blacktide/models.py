@@ -1,6 +1,6 @@
 from sqlalchemy import Column
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.types import String, DateTime, Integer, SmallInteger, Date
+from sqlalchemy.types import String, DateTime, Integer, SmallInteger, Date, Time
 
 DeclarativeBase = declarative_base()
 
@@ -67,13 +67,13 @@ class RaceResult(DeclarativeBase):
     horse_sex = Column(String)
     horse_age = Column(SmallInteger)
     jockey_id = Column(String)
-    time = Column(String)
+    time = Column(Time)
     margin = Column(String)
     first_position = Column(SmallInteger)
     second_position = Column(SmallInteger)
     third_position = Column(SmallInteger)
     fourth_position = Column(SmallInteger)
-    l3f = Column(String)
+    l3f = Column(Time)
     jockey_weight = Column(String)
     horse_weight = Column(String)
     fav = Column(String)
