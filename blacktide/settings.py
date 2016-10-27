@@ -98,7 +98,7 @@ SQLALCHEMY_DB_CONF = {
         "host": "localhost",
         "port": "5432",
         "username": "postgres",
-        "password": "admin",
+        "password": "postgres",
         "database": "kurofune"
         }
 
