@@ -7,7 +7,7 @@ dependencies:
     - pip install shub
   override:
     - pip install tox tox-pyenv
-    - pyenv local 3.5.0
+    - pyenv local 3.5.2
 
 deployment:
   production:
