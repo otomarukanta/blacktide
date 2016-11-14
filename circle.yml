@@ -10,5 +10,5 @@ deployment:
   production:
     branch: master
     commands:
-      - shub deploy
+      - sh ./deploy.sh
 
