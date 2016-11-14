@@ -29,7 +29,7 @@ class TminazumaSpider(CrawlSpider):
 
     def __init__(self, *args, **kargs):
         super(TminazumaSpider, self).__init__(*args, **kargs)
-        self.start_urls = ['http://keiba.yahoo.co.jp/schedule/list/']
+        self.start_urls = ['http://keiba.yahoo.co.jp/']
 
     def parse_result(self, response):
         self.logger.debug("parseing ...")
