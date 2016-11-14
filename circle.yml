@@ -1,0 +1,14 @@
+machine:
+  python:
+    version: 2.7.12
+
+dependencies:
+  pre:
+    - pip install shub
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - shub deploy
+
