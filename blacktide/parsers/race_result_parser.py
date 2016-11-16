@@ -165,7 +165,7 @@ class RaceResultParser():
         for grade in ['GIII', 'GII', 'GI']:
             if grade in name:
                 return grade
-            return self.grade_regex.findall(race_type)[0]
+        return self.grade_regex.findall(race_type)[0]
 
     def __get_track_type(self, track_infos):
         if '障害' in track_infos:
