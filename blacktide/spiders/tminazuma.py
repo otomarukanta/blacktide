@@ -38,4 +38,5 @@ class TminazumaSpider(CrawlSpider):
         return parsed
 
     def exclude_race_result(self, links):
-        return filter(lambda x: not self.regex_race_result.search(x.url), links)
+        print(links)
+        return filter(lambda x: not x.text == 'レコードが出たレース', links)
