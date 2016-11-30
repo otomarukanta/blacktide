@@ -19,6 +19,7 @@ class RaceResultParser():
         self.race_id = self.id_regex.match(res.url).group(1)
         item['meta'] = self.__parse_meta(res)
         item['result'] = self.__parse_result(res)
+        item['meta']['race_horses'] = len(item['result'])
         item['payoff'] = self.__parse_payoff(res)
 
         return item

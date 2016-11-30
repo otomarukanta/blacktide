@@ -19,6 +19,7 @@ class RaceMeta(DeclarativeBase):
     race_days = Column(SmallInteger)
     race_weeks = Column(SmallInteger)
     race_grade = Column(String)
+    race_horses = Column(SmallInteger)
 
     track_meter = Column(SmallInteger)
     track_place = Column(String)
