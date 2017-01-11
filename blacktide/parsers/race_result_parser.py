@@ -9,6 +9,7 @@ class RaceResultParser():
     date_regex = re.compile(r'(\d+)年(\d+)月(\d+)日')
     number_regex = re.compile(r'\d+')
     grade_regex = re.compile(r"\d+?万下|オープン|新馬|未勝利|未出走")
+    horse_w_regex = re.compile(r'(\d+)()')
 
     surface_set = set(['芝', 'ダート', '芝→ダート'])
     rotation_set = set(['右', '左', '直線'])
@@ -40,7 +41,7 @@ class RaceResultParser():
         ret['race_days'], ret['race_weeks'] = self.number_regex.findall(place)
 
         metas = res.xpath('//p[@id="raceTitMeta"]/text()').extract()
-        ret['race_grade'] = self.__get_race_grade(ret['race_name'], metas[7])
+        ret['race_grade'] = self.__get_race_grade(ret['race_name'], metas[6])
 
         ret['track_weather'], ret['track_condition'] = \
             res.xpath('//p[@id="raceTitMeta"]/img/@alt').extract()
@@ -54,15 +55,15 @@ class RaceResultParser():
         ret['track_rotation'] = self.__get_matched(
                 self.rotation_set, track_set)
 
-        conditions = self.__get_conditions(metas[7])
+        conditions = self.__get_conditions(metas[6])
         ret['cond_intl'] = conditions['international']
         ret['cond_jockey'] = conditions['jockey']
         ret['cond_local'] = conditions['local']
         ret['cond_weight'] = conditions['weight']
-        ret['cond_age'] = metas[6].strip()
+        ret['cond_age'] = metas[5].strip()
 
         ret['prize1'], ret['prize2'], ret['prize3'], ret['prize4'],\
-            ret['prize5'] = metas[8].strip(' 本賞金：万円').split('、')
+            ret['prize5'] = metas[7].strip(' 本賞金：万円').split('、')
 
         return ret
 
@@ -71,7 +72,7 @@ class RaceResultParser():
 
         tr_list = [x.xpath('td')
                    for x
-                   in res.xpath('//table[@id="resultLs"]/.').xpath('tr')
+                   in res.xpath('//table[@id="raceScore"]/tbody/.').xpath('tr')
                    if x.xpath('td')]
 
         for i, x in enumerate(tr_list):
@@ -82,43 +83,42 @@ class RaceResultParser():
             line['bk'] = x[1].xpath('span/text()')[0].extract().strip()
             line['pp'] = self.__get_text(x[2])
             line['horse_id'] = self.__get_id(x[3])
-            sex_age = self.__get_text(x[4])
+
+            sex_age, weight, blinker = self.__get_sex_age_weight_blinker(x[3])
             line['horse_sex'] = sex_age.strip('1234567890')
             line['horse_age'] = sex_age.strip(line['horse_sex'])
-            line['jockey_id'] = self.__get_id(x[5])
+            line['horse_weight'] = self.horse_w_regex.match(weight).group(1)
+            line['blinker'] = blinker
+
+            line['time'] = self.__parse_time(self.__get_1st_row(x[4]))
+            line['margin'] = self.__get_2nd_row(x[4])
+
             try:
-                line['time'] = self.__parse_time(self.__get_text(x[6]))
-            except:
-                line['time'] = None
-            line['margin'] = self.__get_text(x[7])
-            try:
-                pos = [int(x) for x in self.__get_text(x[8]).split('-')]
+                pos = [int(x) for x
+                       in self.__get_1st_row(x[5]).split('-')]
             except:
                 pos = list()
             line['first_position'] = pos[-4] if len(pos) > 3 else None
             line['second_position'] = pos[-3] if len(pos) > 2 else None
             line['third_position'] = pos[-2] if len(pos) > 1 else None
             line['fourth_position'] = pos[-1] if len(pos) > 0 else None
-            line['l3f'] = self.__parse_time(self.__get_text(x[9]))
+            line['l3f'] = self.__parse_time(self.__get_2nd_row(x[5]))
+
+            line['jockey_id'] = self.__get_id(x[6])
             line['jockey_weight'] = float('.'.join(
-                self.number_regex.findall(self.__get_text(x[10]))))
-            try:
-                line['horse_weight'] = self.__get_text(x[11])
-            except:
-                line['horse_weight'] = None
+                self.number_regex.findall(self.__get_2nd_row(x[6]))))
 
             try:
-                line['fav'] = self.__get_text(x[12])
+                line['fav'] = self.__get_1st_row(x[7])
             except:
                 line['fav'] = None
 
             try:
-                line['odds'] = float(self.__get_text(x[13]))
+                line['odds'] = float(self.__get_2nd_row(x[7]).strip('(-) '))
             except:
                 line['odds'] = None
 
-            line['blinker'] = self.__get_text(x[14])
-            line['trainer_id'] = self.__get_id(x[15])
+            line['trainer_id'] = self.__get_id(x[8])
 
             ret.append(line)
 
@@ -140,7 +140,7 @@ class RaceResultParser():
             line['odds_id'] = i
             line['kind'] = kinds[i]
             combs, yen, _ = [x.xpath('text()').extract_first()
-                          for x in tr.xpath('td')]
+                             for x in tr.xpath('td')]
             if combs:
                 combs = self.number_regex.findall(combs)
             else:
@@ -214,12 +214,21 @@ class RaceResultParser():
             t = None
         return t
 
+    def __get_1st_row(self, x):
+        return x.xpath('text()').extract_first()
+
+    def __get_2nd_row(self, x):
+        return x.xpath('./span/text()').extract_first()
+
     def __get_text(self, x):
-        a = x.xpath('text()').extract()
+        a = x.xpath('string(.)').extract()
         if not a:
             return None
         else:
             return a[0].strip()
+
+    def __get_sex_age_weight_blinker(self, x):
+        return x.xpath('string(.)').extract()[0].split('\n')[1].split('/')
 
     def __get_id(self, x):
         return x.xpath('a/@href')[0].extract().split('/')[3]
