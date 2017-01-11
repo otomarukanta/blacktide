@@ -149,8 +149,8 @@ class RaceResultParser():
             line['comb2'] = combs[1] if len(combs) > 1 else None
             line['comb3'] = combs[2] if len(combs) > 2 else None
 
-            yen = self.number_regex.findall(yen)
-            line['yen'] = yen[0] if yen else None
+            line['yen'] = yen.replace(',', '')\
+                             .replace('円', '') if yen else None
 
             popularity = self.number_regex.findall(
                     tr.xpath('td/span/text()').extract_first())
