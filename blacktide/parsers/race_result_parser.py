@@ -159,7 +159,8 @@ class RaceResultParser():
                 line['popularity'] = popularity[0]
             else:
                 line['popularity'] = None
-            ret.append(line)
+            if combs:
+                ret.append(line)
 
         return ret
 
