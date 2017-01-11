@@ -87,7 +87,8 @@ class RaceResultParser():
             sex_age, weight, blinker = self.__get_sex_age_weight_blinker(x[3])
             line['horse_sex'] = sex_age.strip('1234567890')
             line['horse_age'] = sex_age.strip(line['horse_sex'])
-            line['horse_weight'] = self.horse_w_regex.match(weight).group(1)
+            m = self.horse_w_regex.match(weight)
+            line['horse_weight'] = m.group(1) if m is not None else None
             line['blinker'] = blinker
 
             line['time'] = self.__parse_time(self.__get_1st_row(x[4]))
