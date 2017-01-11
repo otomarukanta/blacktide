@@ -204,7 +204,7 @@ class RaceResultParser():
         return condition
 
     def __parse_time(self, raw):
-        if raw == "0." or raw == "99.9":
+        if raw == "0." or raw == "99.9" or raw is None:
             t = None
         elif raw.count('.') == 1:
             t = datetime.strptime(raw, '%S.%f').time()
