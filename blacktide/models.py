@@ -61,6 +61,7 @@ class RaceResult(DeclarativeBase):
 
     race_id = Column(String, primary_key=True)
     row = Column(Integer, primary_key=True)
+    race_datetime = Column(DateTime)
     fp = Column(String)
     bk = Column(Integer)
     pp = Column(Integer)
