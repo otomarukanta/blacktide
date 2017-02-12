@@ -19,7 +19,7 @@ class KitasaBlackSpider(CrawlSpider):
 
     def __init__(self, *args, **kargs):
         super(KitasaBlackSpider, self).__init__(*args, **kargs)
-        url = 'http://keiba.yahoo.co.jp/schedule/list/{}/?month='.format(
+        url = 'https://keiba.yahoo.co.jp/schedule/list/{}/?month='.format(
                 kargs['year'])
         self.start_urls = ['{}{}'.format(url, month) for month in range(1, 13)]
 
