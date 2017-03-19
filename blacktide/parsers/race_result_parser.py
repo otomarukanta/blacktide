@@ -219,10 +219,16 @@ class RaceResultParser():
         return t
 
     def __get_1st_row(self, x):
-        return x.xpath('text()').extract_first()
+        row = x.xpath('text()').extract_first()
+        if row is None:
+            return None
+        return row.strip()
 
     def __get_2nd_row(self, x):
-        return x.xpath('./span/text()').extract_first()
+        row = x.xpath('./span/text()').extract_first()
+        if row is None:
+            return None
+        return row.strip()
 
     def __get_text(self, x):
         a = x.xpath('string(.)').extract()
@@ -232,7 +238,8 @@ class RaceResultParser():
             return a[0].strip()
 
     def __get_sex_age_weight_blinker(self, x):
-        return x.xpath('string(.)').extract()[0].split('\n')[1].split('/')
+        return [x.strip() for x in
+                x.xpath('./span/text()').extract_first().split('/')]
 
     def __get_id(self, x):
         return x.xpath('a/@href')[0].extract().split('/')[3]
